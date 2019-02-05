@@ -1,13 +1,11 @@
 #include <iostream>
-#include "csvparser.h"
+#include "CsvReader.h"
 
 using namespace std;
 
 int main(void)
 {
-	cout << "Hello world" << endl;
-
-	DefaultState state{ nullptr };
-	state.handle();
+	CsvStateMachine csm{ "death_rates.csv" };
+	vector<vector<string>> result = csm.processFile();
 	return 0;
 }
