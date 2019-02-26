@@ -24,6 +24,8 @@
   <ItemGroup>
     <None Include="encoded.ppm" />
     <None Include="encoded1.ppm" />
+    <None Include="output.ppm" />
+    <None Include="table.ppm" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pixel.h" />

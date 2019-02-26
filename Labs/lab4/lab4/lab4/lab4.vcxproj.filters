@@ -26,6 +26,12 @@
     <None Include="encoded1.ppm">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="table.ppm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="output.ppm">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StringSplitter.h">

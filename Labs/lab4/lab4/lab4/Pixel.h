@@ -39,8 +39,6 @@ public:
 		return _blue_value;
 	}
 
-
-
 	// get full status
 	bool isPopulated()
 	{

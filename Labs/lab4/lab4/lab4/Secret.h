@@ -57,6 +57,7 @@ public:
 	{
 		_input_file_string = i_file_name;
 		_output_file_string = o_file_name;
+
 		_input_file_vector = readFile(_input_file_string);
 		_output_stream = ofstream{_output_file_string};
 	}
@@ -71,8 +72,11 @@ public:
 		}
 		else if (in_or_out == 1)
 		{
-			_output_file_string = file_name;
-			_output_stream = ofstream{ file_name };
+			_input_file_string = file_name;
+			_input_file_vector = readFile(file_name);
+
+		//	_output_file_string = file_name;
+			_output_stream = ofstream{ "temp.ppm" };
 
 		}
 	}
@@ -88,7 +92,7 @@ public:
 		_max_brightness = _input_file_vector[2];
 	}
 
-	// writes the header of the output file if there is an output file
+	// writes the header of the output file if there is an output file (NOT WORKING)
 	void writeHeader()
 	{
 		getHeader();
@@ -116,12 +120,13 @@ public:
 		
 		pixel_table.resize(_length);
 
-		for (unsigned int i = 3; i < _input_file_vector.size(); i++)
+		for (unsigned int i = 3; i <= _input_file_vector.size() - 1; i++)
 		{
 			vector<string> _color_values_vector = StringSplitter::split(_input_file_vector[i], " ");
 
 			for (unsigned int i = 3; i < _color_values_vector.size() - 1; i++)
 			{
+				// try to do i += 3 and get rid of if statement
 				try
 				{
 					if (i % 3 == 0)
@@ -133,7 +138,7 @@ public:
 						current_row.push_back(current_pixel);
 						current_pixel = Pixel{};
 					}
-					if (current_row.size() == _width)
+					if (current_row.size() == _width - 1)
 					{
 						pixel_table[row_counter] = current_row;
 						current_row = vector<Pixel>{};
@@ -144,6 +149,15 @@ public:
 				{ }
 			}
 
+			/*ofstream table_stream = ofstream{ "table.ppm" };
+			for (auto row : pixel_table)
+			{
+				for (auto pix : row)
+				{
+					table_stream << "(" << pix.getRedValue() << ", " << pix.getGreenValue() << ", " << pix.getBlueValue() << "), -- ";
+				}
+				table_stream << endl;
+			}*/
 		}
 		return pixel_table;
 	}
@@ -159,9 +173,7 @@ public:
 		int next_row = current_pixel.getGreenValue();
 		int next_col = current_pixel.getBlueValue();
 
-		//cout << message << endl;
-
-		while (current_pixel.getGreenValue() != 0 && current_pixel.getBlueValue() != 0)
+		while (next_row != 0 && next_col != 0)
 		{
 			current_pixel.clear();
 			current_pixel = table[next_row][next_col];
@@ -170,30 +182,61 @@ public:
 
 			message << (char)current_pixel.getRedValue();
 		}
-		//cout << message.str();
 		return message.str();
 	}
 
+	// function to embed a message into an image
 	void setMessage(string secret_message)
 	{
-		vector<int> rows_used{};
-		vector<int> cols_used{};
+		vector<vector<Pixel>> table = makeTable();
+		getHeader();
 		srand(time(NULL));
+
 		Pixel current_pixel{};
+		vector<Pixel> phrase{};
+
 		for (auto c : secret_message)
 		{
-			int rand_row = (rand() % _length) + 1;
-			int rand_col = (rand() % _width) + 1;
 			current_pixel.setRedValue((int)c);
+			current_pixel.setGreenValue(rand() % _length + 1);
+			current_pixel.setBlueValue(rand() % _width + 1);
 
-			if (rand_row != 0 || rand_col != 0)
-			{
-				current_pixel.setGreenValue((rand() % 500) + 1);
-				current_pixel.setBlueValue((rand() % 500) + 1);
-			}
-			else
-			{ }
+			phrase.push_back(current_pixel);
 		}
+
+		phrase[phrase.size() - 1].setRedValue((int)phrase[phrase.size()-1].getRedValue());
+		phrase[phrase.size() - 1].setGreenValue(0);
+		phrase[phrase.size() - 1].setBlueValue(0);
+
+		//for (auto pix : phrase)
+		//{
+		//	cout << "(" << pix.getRedValue() << ", " << pix.getGreenValue() << ", " << pix.getBlueValue() << ") " << endl;
+		//}
+
+		table[0][0].setRedValue(phrase[0].getRedValue());
+		table[0][0].setGreenValue(phrase[0].getGreenValue());
+		table[0][0].setBlueValue(phrase[0].getBlueValue());
+
+		for (unsigned int i = 1; i < phrase.size() - 1; i++)
+		{
+			table[phrase[i].getGreenValue()][phrase[i].getBlueValue()].setRedValue(phrase[i].getRedValue());
+		}
+
+		getHeader();
+		ofstream table_stream = ofstream{ "output.ppm" };
+		table_stream << _magic_number << endl;
+		table_stream << _width << " " << _length << endl;
+		table_stream << _max_brightness << endl;
+
+		for (auto row : table)
+		{
+			for (auto pix : row)
+			{
+				table_stream << pix.getRedValue() << " " << pix.getGreenValue() << " " << pix.getBlueValue() << " ";
+			}
+			table_stream << endl;
+		}
+
+		//_input_file_string = "output.ppm";
 	}
 };
-

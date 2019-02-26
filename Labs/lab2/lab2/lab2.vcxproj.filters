@@ -31,8 +31,5 @@
     <ClInclude Include="StringSplitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PpmParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

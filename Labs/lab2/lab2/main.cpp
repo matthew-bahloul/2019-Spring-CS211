@@ -32,7 +32,7 @@ int main(void)
 	getline(cin, out_file_name);
 
 	// tell the user that the process is starting
-	cout << "parsing";
+	cout << "parsing..." << endl;
 
 	// use readFile to read file specified by the user
 	vector<string> ppm_in_file = readFile(source_file_name);
@@ -43,26 +43,24 @@ int main(void)
 	ppm_out_file << "400 273" << endl;
 	ppm_out_file << "255" << endl;
 
-
 	// start on row 4 because the first three lines do not match the format of the rest of the document
-	for (int i = 3; i < ppm_in_file.size(); i++)
+	for (unsigned int i = 3; i < ppm_in_file.size(); i++)
 	{
 		// split the strings into vectors
 		vector<string> color_row = StringSplitter::split(ppm_in_file[i], " ");
-		
-		// remove the green by changing green values to 0, START ON A INDEX 1 TO START ON A GREEN VALUE
-		for (int j = 1; j < color_row.size(); j+=3)
+
+		// remove the color by changing  value to 0, 
+		for (unsigned int j = 1; j < color_row.size(); j += 3)
 		{
 			color_row[j] = "0";
 		}
-	
+
 		// write the values to the output file specified by the user
 		for (auto val : color_row)
 		{
 			ppm_out_file << val << " ";
 		}
 		ppm_out_file << endl;
-
 	}
 
 	// update the user
