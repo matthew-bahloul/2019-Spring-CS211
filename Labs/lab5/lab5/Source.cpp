@@ -65,6 +65,12 @@ int main(void)
 			}	
 		}
 
+		if (numbers.size() > 1)
+		{
+			cout << "Bad operators, press any key to exit" << endl;
+			cin.get();
+			exit(1);
+		}
 		result = numbers.top();
 
 		cout << "Result: " << result << endl;
