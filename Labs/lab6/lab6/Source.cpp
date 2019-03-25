@@ -9,7 +9,8 @@ bool find(BinaryNode<int>* start, const int& to_find);
 int size(BinaryNode<int>* start);
 int height(BinaryNode<int>* start);
 bool isFull(BinaryNode<int>* start);
-void bstAdd(BinaryNode<int>* start, int value);
+BinaryNode<int>* bstAdd(BinaryNode<int>* start, int value);
+void preorder(BinaryNode<int>* root);
 
 
 int main(void)
@@ -33,6 +34,8 @@ int main(void)
 	root->getRight()->getRight()->getRight()->setRight(new BinaryNode<int>{ 22 });
 
 	cout << height(root);
+
+	preorder(root);
 
 
 	return 0;
@@ -125,4 +128,64 @@ BinaryNode<int>* bstAdd(BinaryNode<int>* node, int value)
 		node->setLeft(bstAdd(node->getLeft(), value));
 	}
 	return node;
+}
+
+BinaryNode<int>* bstRemove(BinaryNode<int>* node, int value)
+{
+	if (node == nullptr)
+	{
+		return nullptr;
+	}
+
+	if (node->getValue() == value)
+	{
+		
+		if (node->getLeft() == nullptr && node->getRight() == nullptr)
+		{
+			BinaryNode<int>* child =
+				node->getLeft() == nullptr ? node->getRight() : node->getLeft();
+
+			delete node;
+
+			return child;
+		}
+		else if (node->getLeft() == nullptr || node->getLeft() == nullptr)
+		{
+			/*MISSING, GET FROM GITHUB*/
+		}
+		// two children
+		else
+		{
+			BinaryNode<int>* largest = node->getLeft();
+			while (largest->getRight() != nullptr)
+			{
+				largest = largest->getRight();
+			}
+
+			node->setValue(largest->getValue());
+			largest = bstRemove(node->getLeft(), largest->getValue());
+			node->setLeft(largest);
+	}
+	}
+	else if (value > node->getValue())
+	{
+		BinaryNode<int>* result = bstRemove(node->getRight(), value);
+		node->setRight(result);
+	}
+	else
+	{
+		BinaryNode<int>* result = bstRemove(node->getLeft(), value);
+		node->setLeft(result);
+	}
+	return node;
+}
+
+void preorder(BinaryNode<int>* root)
+{
+	if (root == nullptr)
+		return;
+
+	cout << root->getValue() << " ";
+	preorder(root->getLeft());
+	preorder(root->getRight());
 }
